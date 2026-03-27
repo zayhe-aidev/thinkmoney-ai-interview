@@ -93,8 +93,7 @@ uv run pytest -v
 
 ## Tips
 
-- The `state["user_info"]` dict has the mock customer's details (user_id, account_id, card_id). Pass these to tools.
-- `src/tools/__init__.py` exports convenience groups: `ACCOUNT_TOOLS`, `CARD_TOOLS`, etc. You can also mix-and-match.
-- The `_route_from_subagent` helper in `graph.py` handles the common "route to tools or back to triage" pattern.
+- The `state["user_info"]` dict has the mock customer's details — pass these to tools that need them.
+- `src/tools/__init__.py` exports convenience groups you can bind to your agents.
 - The knowledge base in `src/knowledge_base/data/` has real-ish content — your agents can reference it.
 - Look at `tests/test_tools.py` to quickly understand what each tool returns.

@@ -18,12 +18,7 @@ You can also mix tools from different groups or use `ALL_TOOLS` if appropriate.
 
 ## Wiring Into the Graph
 
-After creating your agent, integrate it in `src/graph.py`:
-
-- **`agent_map`** — tells the routing function which graph node handles each agent name
-- **`available_agents`** — tells the triage prompt which agents exist so it only routes to real ones
-
-Study how the triage node is wired (nodes, conditional edges, tool execution) and follow the same pattern for your sub-agents.
+After creating your agent, integrate it in `src/graph.py`. Study the existing triage wiring for the pattern.
 
 ## State Access
 
