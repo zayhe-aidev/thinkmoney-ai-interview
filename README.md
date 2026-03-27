@@ -49,7 +49,7 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 │   ├── main.py              # CLI entry point
 │   ├── config.py             # LLM provider factory
 │   ├── models.py             # State definitions, mock user data
-│   ├── graph.py              # Agent graph (⭐ main file to modify)
+│   ├── graph.py              # Agent graph definition
 │   ├── agents/
 │   │   ├── triage.py         # Triage agent (provided, reference impl)
 │   │   └── README.md         # Pattern guide for building sub-agents

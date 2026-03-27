@@ -18,8 +18,7 @@ def _make_route_target_fn(agent_map: dict[str, str]):
     """Create a routing function that knows about registered agents.
 
     Args:
-        agent_map: Dict mapping agent names (as used in triage prompt) to
-                   graph node names. E.g. {"account": "account_agent"}.
+        agent_map: Dict mapping agent names to graph node names.
 
     Returns:
         A routing function for use with add_conditional_edges.
