@@ -22,6 +22,9 @@ def prepare_messages(messages: list) -> list:
         if isinstance(msg, AIMessage) and msg.tool_calls:
             for tc in msg.tool_calls:
                 if tc["id"] not in resolved:
+                    # Only stub route_to_agent — it is the only tool that bypasses triage_tools
+                    if tc["name"] != "route_to_agent":
+                        continue
                     result.append(ToolMessage(
                         content="Routed to specialist agent.",
                         tool_call_id=tc["id"],

@@ -9,7 +9,7 @@ from langchain_core.tools import tool
 
 from src.knowledge_base.loader import KnowledgeBase
 from src.tools.account import get_account_details
-from src.tools.sentiment import detect_tone
+from src.tools.sentiment import make_detect_tone_tool
 from src.agents.utils import prepare_messages
 
 # Initialise the knowledge base (loads/indexes on first use)
@@ -46,7 +46,7 @@ def route_to_agent(agent_name: str, reason: str) -> str:
 
 
 # Tools exposed by the triage agent
-TRIAGE_TOOLS = [search_knowledge_base, get_account_details, route_to_agent, detect_tone]
+TRIAGE_TOOLS = [search_knowledge_base, get_account_details, route_to_agent]
 
 
 _TRIAGE_BASE_PROMPT = """You are thinkmoney's AI customer service triage agent. You are the first point of \
@@ -123,7 +123,9 @@ def create_triage_node(llm, available_agents: dict[str, str] | None = None):
     Returns:
         A callable node function compatible with StateGraph.add_node().
     """
-    llm_with_tools = llm.bind_tools(TRIAGE_TOOLS)
+    detect_tone = make_detect_tone_tool(llm)
+    all_tools = TRIAGE_TOOLS + [detect_tone]
+    llm_with_tools = llm.bind_tools(all_tools)
 
     def triage_node(state):
         user_name = state.get("user_info", {}).get("name", "Customer")

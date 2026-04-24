@@ -9,6 +9,7 @@ from langgraph.prebuilt import ToolNode
 from langchain_core.messages import ToolMessage
 
 from src.models import AgentState
+from src.tools.sentiment import make_detect_tone_tool
 from src.agents.triage import create_triage_node, TRIAGE_TOOLS
 from src.agents.account import create_account_node
 from src.agents.card import create_card_node
@@ -44,6 +45,13 @@ def _make_route_target_fn(agent_map: dict[str, str]):
 
         if not hasattr(last_message, "tool_calls") or not last_message.tool_calls:
             return END
+
+        tool_names = [tc["name"] for tc in last_message.tool_calls]
+
+        # If detect_tone hasn't run yet but route_to_agent is present,
+        # force triage_tools to run detect_tone first
+        if "route_to_agent" in tool_names and "detect_tone" in tool_names:
+            return "triage_tools"
 
         for tool_call in last_message.tool_calls:
             if tool_call["name"] == "route_to_agent":
@@ -143,7 +151,8 @@ def build_graph(llm):
     graph.add_node("triage", triage_node)
 
     # --- Triage tool execution ---
-    triage_tool_node = ToolNode(TRIAGE_TOOLS)
+    detect_tone_tool = make_detect_tone_tool(llm)
+    triage_tool_node = ToolNode(TRIAGE_TOOLS + [detect_tone_tool])
     graph.add_node("triage_tools", triage_tool_node)
 
     # --- Unavailable agent handler ---

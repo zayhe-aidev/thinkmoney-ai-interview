@@ -16,7 +16,7 @@ from src.tools.account import get_account_details
 
 class TestTriageTools:
     def test_tools_list_has_three_tools(self):
-        assert len(TRIAGE_TOOLS) == 4
+        assert len(TRIAGE_TOOLS) == 3
 
     def test_search_knowledge_base_in_tools(self):
         tool_names = [t.name for t in TRIAGE_TOOLS]
@@ -120,7 +120,10 @@ class TestCreateTriageNode:
         mock_llm = MagicMock()
         mock_llm.bind_tools = MagicMock(return_value=mock_llm)
         create_triage_node(mock_llm)
-        mock_llm.bind_tools.assert_called_once_with(TRIAGE_TOOLS)
+        mock_llm.bind_tools.assert_called_once()
+        bound = mock_llm.bind_tools.call_args[0][0]
+        assert bound[:len(TRIAGE_TOOLS)] == TRIAGE_TOOLS
+        assert bound[len(TRIAGE_TOOLS)].name == "detect_tone"
 
     def test_node_returns_state_update(self):
         mock_llm = MagicMock()
