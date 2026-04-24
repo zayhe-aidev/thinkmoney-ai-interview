@@ -16,7 +16,7 @@ from src.tools.account import get_account_details
 
 class TestTriageTools:
     def test_tools_list_has_three_tools(self):
-        assert len(TRIAGE_TOOLS) == 3
+        assert len(TRIAGE_TOOLS) == 4
 
     def test_search_knowledge_base_in_tools(self):
         tool_names = [t.name for t in TRIAGE_TOOLS]

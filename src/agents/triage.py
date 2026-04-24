@@ -9,6 +9,8 @@ from langchain_core.tools import tool
 
 from src.knowledge_base.loader import KnowledgeBase
 from src.tools.account import get_account_details
+from src.tools.sentiment import detect_tone
+from src.agents.utils import prepare_messages
 
 # Initialise the knowledge base (loads/indexes on first use)
 _kb = KnowledgeBase()
@@ -44,7 +46,7 @@ def route_to_agent(agent_name: str, reason: str) -> str:
 
 
 # Tools exposed by the triage agent
-TRIAGE_TOOLS = [search_knowledge_base, get_account_details, route_to_agent]
+TRIAGE_TOOLS = [search_knowledge_base, get_account_details, route_to_agent, detect_tone]
 
 
 _TRIAGE_BASE_PROMPT = """You are thinkmoney's AI customer service triage agent. You are the first point of \
@@ -66,6 +68,8 @@ Use the route_to_agent tool with the appropriate agent name.
 {available_agents_section}
 
 Routing guidelines:
+- Use detect_tone on the customer's latest message before routing to a specialist agent.
+- If tone is frustrated with confidence >= 0.7, route to 'hitl' instead of the specialist agent.
 - If the customer is asking a general "how does it work?" question → search the knowledge base
 - If the customer wants to perform an action or look up their specific data → route to the appropriate agent if one is available
 - If no specialist agent is available for the request, let the customer know that capability is not yet available and offer to help with what you can do
@@ -128,7 +132,7 @@ def create_triage_node(llm, available_agents: dict[str, str] | None = None):
         system = SystemMessage(
             content=_build_system_prompt(first_name, available_agents)
         )
-        messages = [system] + state["messages"]
+        messages = [system] + prepare_messages(state["messages"])
         response = llm_with_tools.invoke(messages)
         return {"messages": [response], "current_agent": "triage"}
 
